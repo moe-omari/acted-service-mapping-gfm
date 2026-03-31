@@ -1018,6 +1018,7 @@ export default function Home() {
   // Initialize map (wait for Leaflet to load)
   useEffect(() => {
     const L = leafletRef.current;
+    if (loading || !services.length) return;
     if (!leafletReady || !L || mapRef.current || !mapContainerRef.current) return;
 
     const initialCenter = userLocation || DEFAULT_MAP_CENTER;
@@ -1102,7 +1103,7 @@ export default function Home() {
       setIsSatelliteView(false);
       setMapReady(false);
     };
-  }, [leafletReady, userLocation, services]);
+  }, [leafletReady, userLocation, services, loading]);
 
   useEffect(() => {
     if (!mapReady || !mapRef.current || !leafletRef.current) return;
