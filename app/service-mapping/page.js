@@ -158,6 +158,46 @@ const getServiceType = (serviceName) => {
   return 'Other';
 };
 
+const deduplicateServices = (services = []) => {
+  const seen = new Set();
+  return services.filter((service = {}) => {
+    const { coordinates, name = '', siteName = '' } = service;
+    const lat = coordinates?.latitude;
+    const lng = coordinates?.longitude;
+    if (lat == null || lng == null) return true;
+
+    const key = [
+      lat,
+      lng,
+      name.trim().toLowerCase(),
+      siteName.trim().toLowerCase(),
+    ].join('|');
+
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
+
+const groupServicesByLocation = (services = []) => {
+  const map = new Map();
+  services.forEach((service = {}) => {
+    const lat = service.coordinates?.latitude;
+    const lng = service.coordinates?.longitude;
+    if (lat == null || lng == null) return;
+
+    const key = `${lat},${lng}`;
+    if (!map.has(key)) map.set(key, []);
+    const servicesAtLoc = map.get(key);
+    const nameKey = (service.name || '').trim().toLowerCase();
+    if (servicesAtLoc.some(existing => (existing.name || '').trim().toLowerCase() === nameKey)) {
+      return;
+    }
+    servicesAtLoc.push(service);
+  });
+  return map;
+};
+
 // Google Analytics event tracking
 const gaEvent = (action, params = {}) => {
   if (typeof window === 'undefined' || !window.gtag) return;
@@ -928,12 +968,12 @@ export default function Home() {
       try {
         const response = await fetch('/coordinates.json');
         const data = await response.json();
-        setServices(data);
+        const cleanedServices = deduplicateServices(data);
+        setServices(cleanedServices);
 
         // Extract unique sites
-        const uniqueSites = [...new Set(data.map(service => service.siteName))];
+        const uniqueSites = [...new Set(cleanedServices.map(service => service.siteName))];
         setSites(uniqueSites);
-        console.log(uniqueSites)
       } catch (error) {
         console.error('Error loading coordinates:', error);
       }
@@ -998,12 +1038,7 @@ export default function Home() {
     baseLayersRef.current = { street: streetLayer, satellite: satelliteLayer };
     setIsSatelliteView(false);
     // Group services by coordinates
-    const locationMap = new Map();
-    services.forEach(service => {
-      const key = `${service.coordinates.latitude},${service.coordinates.longitude}`;
-      if (!locationMap.has(key)) locationMap.set(key, []);
-      locationMap.get(key).push(service);
-    });
+    const locationMap = groupServicesByLocation(services);
 
     markersRef.current = new Map();
 
@@ -1150,12 +1185,7 @@ export default function Home() {
   useEffect(() => {
     if (!mapRef.current || !services.length) return;
 
-    const locationMap = new Map();
-    services.forEach(service => {
-      const key = `${service.coordinates.latitude},${service.coordinates.longitude}`;
-      if (!locationMap.has(key)) locationMap.set(key, []);
-      locationMap.get(key).push(service);
-    });
+    const locationMap = groupServicesByLocation(services);
 
     // Update all markers' popups with new language
     mapRef.current.eachLayer(layer => {
@@ -1297,6 +1327,10 @@ export default function Home() {
 
   const renderMarkerInfoContent = () => {
     if (!selectedMarkerInfo) return null;
+    const primarySiteName = selectedMarkerInfo.servicesAtLoc[0]?.siteName || '';
+    const displaySiteName = lang === 'ar'
+      ? (t[lang]?.siteNames?.[primarySiteName] || primarySiteName)
+      : primarySiteName;
     return (
       <>
         <button
@@ -1306,17 +1340,13 @@ export default function Home() {
           <span aria-label="Close">✕</span>
         </button>
         <div className="p-6 pt-12 space-y-4">
-          <h2 className="text-xl font-bold mb-2">{selectedMarkerInfo.servicesAtLoc[0]?.siteName}</h2>
+          <h2 className="text-xl font-bold mb-2">{displaySiteName}</h2>
           <p className="text-xs mb-2">{selectedMarkerInfo.lat}, {selectedMarkerInfo.lng}</p>
           {selectedMarkerInfo.servicesAtLoc.map((s, idx) => (
             <div key={idx} className="mb-4 border-b border-gray-200 dark:border-zinc-800 pb-4 last:border-b-0 last:pb-0">
               <div className="font-semibold text-lg mb-1">{t[lang].services_provided[s.name] || s.name}</div>
               <div className="text-sm mb-1">{t[lang].governorates[s.governorate] || s.governorate} - {t[lang].areas[s.area] || s.area}</div>
               <div className="text-xs mb-1">{getServiceType(s.name)}</div>
-              {s.focal && <div className="text-xs mb-1"><b>{t[lang].focal}:</b> {s.focal}</div>}
-              {s['focal phone number'] && (
-                <div className="text-xs"><b>{lang === 'ar' ? 'رقم جوال شخص التواصل' : 'Focal Phone'}:</b> {s['focal phone number']}</div>
-              )}
             </div>
           ))}
         </div>
