@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Select from 'react-select';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
@@ -49,7 +49,6 @@ const campBoundaryFiles = [
 
 // Define marker colors for different service types
 const getColorFromService = (serviceName) => {
-  console.log('Service name:', serviceName);
   const lowerName = serviceName.toLowerCase();
   let color;
   if (lowerName.includes('water trucking')) color = '#1e90ff';
@@ -61,17 +60,42 @@ const getColorFromService = (serviceName) => {
   else if (lowerName.includes('distribution point')) color = '#545454';
   else if (lowerName.includes('social activity')) color = '#93c01f';
   else color = '#808080'; // default gray
-  console.log('Assigned color:', color);
   return color;
 };
 
+const getTranslatedLabel = (dictionary = {}, value = '') => {
+  if (!value) return '';
+  if (dictionary[value]) return dictionary[value];
+
+  const normalizedValue = normalizeServiceLabel(value);
+  const matchedEntry = Object.entries(dictionary).find(([key]) => normalizeServiceLabel(key) === normalizedValue);
+
+  return matchedEntry?.[1] || value;
+};
+
+const getTranslatedServiceType = (dictionary = {}, value = '') => {
+  if (!value) return '';
+
+  const canonicalType = getServiceType(value);
+  if (dictionary[canonicalType]) return dictionary[canonicalType];
+
+  return getTranslatedLabel(dictionary, canonicalType || value);
+};
+
 const createHealthIcon = (L, color = '#ff4444') => {
+  const crossCenterX = 12;
+  const crossCenterY = 10.5;
+  const verticalWidth = 2.5;
+  const verticalHeight = 9;
+  const horizontalWidth = 9;
+  const horizontalHeight = 2.5;
   const svgIcon = `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="25" height="41">
       <path class="marker-glow" fill="none" stroke="var(--marker-glow-color, transparent)" stroke-width="var(--marker-glow-width, 0)" d="M12 0C7.029 0 3 4.029 3 9c0 7.5 9 18 9 18s9-10.5 9-18c0-4.971-4.029-9-9-9z" />
       <path class="marker-outline" fill="none" stroke="var(--marker-outline-color, transparent)" stroke-width="var(--marker-outline-width, 0)" d="M12 0C7.029 0 3 4.029 3 9c0 7.5 9 18 9 18s9-10.5 9-18c0-4.971-4.029-9-9-9z" />
       <path class="marker-shape" fill="${color}" stroke="var(--marker-stroke-color, #fff)" stroke-width="var(--marker-stroke-width, 1.5)" d="M12 0C7.029 0 3 4.029 3 9c0 7.5 9 18 9 18s9-10.5 9-18c0-4.971-4.029-9-9-9z"/>
-      <image href="/medical.png" x="6" y="6" width="12" height="12" style="filter: brightness(0) invert(1)" />
+      <rect x="${crossCenterX - verticalWidth / 2}" y="${crossCenterY - verticalHeight / 2}" width="${verticalWidth}" height="${verticalHeight}" rx="1.25" fill="#fff" />
+      <rect x="${crossCenterX - horizontalWidth / 2}" y="${crossCenterY - horizontalHeight / 2}" width="${horizontalWidth}" height="${horizontalHeight}" rx="1.25" fill="#fff" />
     </svg>
   `;
   return L.divIcon({
@@ -110,7 +134,6 @@ const getMarkerIcon = (L, serviceName) => {
 };
 
 const getStripedMarkerIcon = (L, colors) => {
-  console.log('Striped marker colors:', colors);
   const numStripes = colors.length;
   const uniqueId = Math.random().toString(36).substr(2, 9);
 
@@ -145,22 +168,41 @@ const getStripedMarkerIcon = (L, colors) => {
   });
 };
 
+const normalizeServiceLabel = (value = '') => value.toLowerCase().replace(/\s+/g, ' ').trim();
+
 // Get service type from name
-const getServiceType = (serviceName) => {
-  if (serviceName.startsWith('Water Trucking')) return 'Water Trucking';
-  if (serviceName.startsWith('Health Space/Clinic')) return 'Health Space/Clinic';
-  if (serviceName.startsWith('Community Kitchen')) return 'Community Kitchen';
-  if (serviceName.startsWith('TLS/School')) return 'TLS/School';
-  if (serviceName.startsWith('Community Space')) return 'Community Space';
-  if (serviceName.startsWith('Nutrition Center')) return 'Nutrition Center';
-  if (serviceName.startsWith('Distribution Point')) return 'Distribution Point';
-  if (serviceName.startsWith('Social Activity')) return 'Social Activity';
+const getServiceType = (serviceName = '') => {
+  const normalizedName = normalizeServiceLabel(serviceName);
+
+  if (normalizedName.includes('water trucking')) return 'Water Trucking';
+  if (normalizedName.includes('health space/clinic')) return 'Health Space/Clinic';
+  if (normalizedName.includes('community kitchen') || normalizedName.includes('tekeya')) return 'Community Kitchen';
+  if (normalizedName.includes('tls/school') || normalizedName.includes('school')) return 'TLS/School';
+  if (normalizedName.includes('community space')) return 'Community Space';
+  if (normalizedName.includes('nutrition center')) return 'Nutrition Center';
+  if (normalizedName.includes('distribution point')) return 'Distribution Point';
+  if (normalizedName.includes('social activity')) return 'Social Activity';
   return 'Other';
+};
+
+const normalizeServiceRecord = (service = {}) => {
+  const normalizedSiteName = typeof service.siteName === 'string' ? service.siteName.trim() : '';
+  const normalizedLocation = typeof service.location === 'string' ? service.location.trim() : '';
+  const normalizedServiceName = typeof service.service_name === 'string' ? service.service_name.trim() : '';
+
+  return {
+    ...service,
+    siteName: normalizedSiteName,
+    location: normalizedLocation,
+    service_name: normalizedServiceName,
+    displaySiteName: normalizedServiceName || normalizedSiteName || normalizedLocation,
+    filterLocation: normalizedLocation || normalizedSiteName,
+  };
 };
 
 const deduplicateServices = (services = []) => {
   const seen = new Set();
-  return services.filter((service = {}) => {
+  return services.map(normalizeServiceRecord).filter((service = {}) => {
     const { coordinates, name = '', siteName = '' } = service;
     const lat = coordinates?.latitude;
     const lng = coordinates?.longitude;
@@ -265,7 +307,7 @@ const rawServiceTranslations = [
     key: 'Community Kitchen - Tekeya',
     en: 'Community Kitchen - Tekeya',
     ar: 'مطبخ مجتمعي (تكية)',
-    aliases: ['Community Kitchen Tekeya'],
+    aliases: ['Community Kitchen Tekeya', 'Community Kitchen/Tekeya', 'Community kitchen/Tekeya'],
   },
   {
     key: 'Community Kitchen - Tekeya (WCK)',
@@ -634,14 +676,14 @@ export default function Home() {
     // State for marker info panel
   const [selectedMarkerInfo, setSelectedMarkerInfo] = useState(null);
   const [showMarkerPanel, setShowMarkerPanel] = useState(false);
+  const [showGuidancePane, setShowGuidancePane] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const [showMobilePanel, setShowMobilePanel] = useState(false);
   const [services, setServices] = useState([]);
-  const [sites, setSites] = useState([]);
-  const [selectedSite, setSelectedSite] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedGovernorate, setSelectedGovernorate] = useState(null);
   const [selectedArea, setSelectedArea] = useState(null);
+  const [selectedServiceType, setSelectedServiceType] = useState(null);
   const [routingControl, setRoutingControl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [geoError, setGeoError] = useState(null);
@@ -676,6 +718,20 @@ export default function Home() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     setLang(getStoredLanguage());
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const hasSeenGuidance = window.localStorage.getItem('serviceMappingGuidanceSeen');
+    if (!hasSeenGuidance) {
+      setShowGuidancePane(true);
+    }
+  }, []);
+
+  const dismissGuidancePane = useCallback(() => {
+    setShowGuidancePane(false);
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem('serviceMappingGuidanceSeen', 'true');
   }, []);
 
   const closeMarkerPanel = () => {
@@ -729,12 +785,14 @@ export default function Home() {
     applyMarkerHighlight(activeMarkerKey);
   }, [activeMarkerKey, applyMarkerHighlight]);
 
-  const t = {
+  const t = useMemo(() => ({
     // Debug: Log all site names in translation dictionaries (browser only)
     en: {
       appTitle: 'Service Mapping App',
       sites: 'Sites',
       services: 'Services',
+      serviceType: 'Service Type',
+      selectServiceType: 'Select Service Type',
       yourLocation: 'Your Location',
       loading: 'Loading location...',
       geolocationError: 'Unable to access your location. Focusing on Gaza Strip.',
@@ -748,6 +806,12 @@ export default function Home() {
       legend: 'Legend',
       mapView: 'Map view',
       satelliteView: 'Satellite view',
+      guidanceTitle: 'How to use the map',
+      guidanceDescription: 'A quick guide for first-time visitors.',
+      guidancePinch: 'Use two fingers to pinch and zoom the map.',
+      guidanceMarker: 'Click or tap a marker to reveal its service details.',
+      guidanceFilters: 'Use the governorate, area, and service type dropdowns to filter the map and services list.',
+      guidanceDismiss: 'Start exploring',
       // Add site name translations
       siteNames: {
         'Al-Farra Site': 'Al-Farra Site',
@@ -783,15 +847,22 @@ export default function Home() {
         "Community Space": "Community Space",
         "Nutrition Center": "Nutrition Center",
         "Distribution Point": "Distribution Point",
-        "Social Activity": "Social Activity"
+        "Social Activity": "Social Activity",
+        "Other": "Other"
       },
       governorates: {
         "Khanyounis": "Khanyounis",
         "Deir Al-Balah": "Deir Al-Balah"
       },
       areas: {
+        "Al-Amal and Al-Karama": "Al-Amal and Al-Karama",
+        "Al-Ihsan": "Al-Ihsan",
         "Mawasi Khanyounis": "Mawasi Khanyounis",
         "Mawasi Al-Qarara": "Mawasi Al-Qarara",
+        "Mohi Al-Deen Al-Najjar": "Mohi Al-Deen Al-Najjar",
+        "Othman 1": "Othman 1",
+        "Othman 2": "Othman 2",
+        "Abu Kefah": "Abu Kefah",
         "Al-Bassa": "Al-Bassa"
       },
       focal: "Focal Person"
@@ -800,6 +871,8 @@ export default function Home() {
       appTitle: 'تطبيق خريطة الخدمات',
       sites: 'المواقع',
       services: 'الخدمات',
+      serviceType: 'نوع الخدمة',
+      selectServiceType: 'اختر نوع الخدمة',
       yourLocation: 'موقعك',
       loading: 'جاري تحميل الموقع...',
       geolocationError: 'تعذر الوصول إلى موقعك. سيتم التركيز على قطاع غزة.',
@@ -813,11 +886,17 @@ export default function Home() {
       legend: 'دليل الألوان',
       mapView: 'عرض الخريطة',
       satelliteView: 'عرض الأقمار الصناعية',
+      guidanceTitle: 'كيفية استخدام الخريطة',
+      guidanceDescription: 'دليل سريع للزائرين لأول مرة.',
+      guidancePinch: 'استخدم إصبعين للتقريب والتبعيد على الخريطة.',
+      guidanceMarker: 'اضغط على أي علامة لإظهار تفاصيل الخدمة.',
+      guidanceFilters: 'استخدم القوائم المنسدلة للمحافظة والمنطقة ونوع الخدمة لتصفية الخريطة وقائمة الخدمات.',
+      guidanceDismiss: 'ابدأ التصفح',
       // Add site name translations in Arabic
       siteNames: {
         "Ahali AL Junaina": "أهالي الجنينة",
         "Ajyal Al-Karama site": "أجيال الكرامة",
-        "Al-Amoody": "العمودي",
+        "Al-Amoody": "العامودي",
         "AL Awda": "العودة",
         "AL Karama Site": "موقع الكرامة",
         "Al Nour Site": "موقع النور",
@@ -897,7 +976,8 @@ export default function Home() {
         "Community Space": "مساحة مجتمعية",
         "Nutrition Center": "مركز تغذية",
         "Distribution Point": "نقطة توزيع",
-        "Social Activity": "نشاط اجتماعي"
+        "Social Activity": "نشاط اجتماعي",
+        "Other": "أخرى"
       },
       governorates: {
         "Khanyounis": "خان يونس",
@@ -908,13 +988,19 @@ export default function Home() {
         "Al-Zawaida": "الزوايدة",
       },
       areas: {
+        "Al-Amal and Al-Karama": "الأمل والكرامة",
+        "Al-Ihsan": "الإحسان",
         "Mawasi Khanyounis": "مواصي خان يونس",
         "Mawasi Al-Qarara": "مواصي القرارة",
+        "Mohi Al-Deen Al-Najjar": "محيي الدين النجار",
+        "Othman 1": "عثمان 1",
+        "Othman 2": "عثمان 2",
+        "Abu Kefah": "أبو كفاح",
         "Al-Bassa": "البصة"
       },
       focal: "الشخص المسؤول"
     },
-  };
+  }), []);
 
   // Load user location
   useEffect(() => {
@@ -932,7 +1018,8 @@ export default function Home() {
           setLoading(false);
         },
         (error) => {
-          console.error('Geolocation error:', error);
+          const geoErrorDetails = `Geolocation unavailable (code: ${error?.code ?? 'unknown'})${error?.message ? ` - ${error.message}` : ''}`;
+          console.warn(geoErrorDetails);
           if (error.code === error.PERMISSION_DENIED) setGeoError('geolocationPermissionDenied');
           else if (error.code === error.POSITION_UNAVAILABLE) setGeoError('geolocationUnavailable');
           else if (error.code === error.TIMEOUT) setGeoError('geolocationTimeout');
@@ -970,10 +1057,6 @@ export default function Home() {
         const data = await response.json();
         const cleanedServices = deduplicateServices(data);
         setServices(cleanedServices);
-
-        // Extract unique sites
-        const uniqueSites = [...new Set(cleanedServices.map(service => service.siteName))];
-        setSites(uniqueSites);
       } catch (error) {
         console.error('Error loading coordinates:', error);
       }
@@ -1082,7 +1165,7 @@ export default function Home() {
           gaEvent('marker_click', {
             service_id: s.id,
             service_name: s.name,
-            site: s.siteName,
+            site: s.displaySiteName || s.siteName,
             type: getServiceType(s.name),
           });
         });
@@ -1184,13 +1267,14 @@ export default function Home() {
 
   // Update marker popups when language changes
   useEffect(() => {
-    if (!mapRef.current || !services.length) return;
+    const Leaflet = leafletRef.current;
+    if (!mapRef.current || !Leaflet || !services.length) return;
 
     const locationMap = groupServicesByLocation(services);
 
     // Update all markers' popups with new language
     mapRef.current.eachLayer(layer => {
-      if (layer instanceof L.Marker && layer.getPopup()) {
+      if (layer instanceof Leaflet.Marker && layer.getPopup()) {
         const latlng = layer.getLatLng();
         const key = Object.keys([...locationMap.entries()].reduce((acc, [k, v]) => {
           if (v[0]?.coordinates.latitude === latlng.lat && v[0]?.coordinates.longitude === latlng.lng) {
@@ -1202,27 +1286,21 @@ export default function Home() {
         if (key) {
           const servicesAtLoc = locationMap.get(key);
           const popupContent = servicesAtLoc.map(s => {
-            const translatedName = t[lang].services_provided[s.name] || s.name;
-            const translatedSiteName = t[lang].siteNames[s.siteName] || s.siteName;
-            const translatedGov = t[lang].governorates[s.governorate] || s.governorate;
-            const translatedArea = t[lang].areas[s.area] || s.area;
+            const translatedName = getTranslatedLabel(t[lang].services_provided, s.name);
+            const translatedSiteName = getTranslatedLabel(t[lang].siteNames, s.displaySiteName);
+            const translatedGov = getTranslatedLabel(t[lang].governorates, s.governorate);
+            const translatedArea = getTranslatedLabel(t[lang].areas, s.area);
+            const translatedServiceType = getTranslatedServiceType(t[lang].legend_services, s.name);
+            const locationLine = s.location ? `<br/><small>${s.location}</small>` : '';
             const focalLine = s.focal ? `<br/><b>${t[lang].focal}:</b> ${s.focal}` : '';
             const focalPhoneLine = s['focal phone number'] ? `<br/><b>Focal Phone:</b> ${s['focal phone number']}` : '';
-            return `<b>${translatedName}</b><br/><small>${translatedSiteName}</small><br/><small>${translatedGov} - ${translatedArea}</small><br/><small>${getServiceType(s.name)}</small>${focalLine}${focalPhoneLine}`;
+            return `<b>${translatedName}</b><br/><small>${translatedSiteName}</small>${locationLine}<br/><small>${translatedGov} - ${translatedArea}</small><br/><small>${translatedServiceType}</small>${focalLine}${focalPhoneLine}`;
           }).join('<hr/>');
           layer.setPopupContent(popupContent);
         }
       }
     });
-  }, [lang, t, services]);
-
-  // Import L for the new effect
-  useEffect(() => {
-    (async () => {
-      const L = (await import('leaflet')).default;
-      window.L = L;
-    })();
-  }, []);
+  }, [lang, services, t]);
 
   const toggleBaseLayer = useCallback(() => {
     const mapInstance = mapRef.current;
@@ -1251,7 +1329,7 @@ export default function Home() {
     gaEvent('service_selected', {
       service_id: service.id,
       service_name: service.name,
-      site: service.siteName,
+      site: service.displaySiteName || service.siteName,
       type: getServiceType(service.name),
     });
 
@@ -1289,6 +1367,35 @@ export default function Home() {
     }
   };
 
+  // Get services for selected site
+  const baseFilteredServices = services.filter(service => (
+    (!selectedGovernorate || service.governorate === selectedGovernorate) &&
+    (!selectedArea || service.area === selectedArea)
+  ));
+
+  const serviceTypes = [...new Set(baseFilteredServices.map(service => getServiceType(service.name)).filter(Boolean))];
+
+  const currentServices = baseFilteredServices.filter(service => (
+    !selectedServiceType || getServiceType(service.name) === selectedServiceType
+  )).map(service => ({
+      ...service,
+      translatedName: getTranslatedLabel(t[lang].services_provided, service.name)
+    }));
+
+  const hasActiveFilters = Boolean(selectedGovernorate || selectedArea || selectedServiceType);
+
+  // Governorate/Area filters
+  const governorates = [...new Set(services.map(s => s.governorate).filter(Boolean))];
+  const areas = selectedGovernorate
+    ? [...new Set(services.filter(s => s.governorate === selectedGovernorate).map(s => s.area).filter(Boolean))]
+    : [];
+
+  useEffect(() => {
+    if (selectedService && !currentServices.some(service => service.id === selectedService.id)) {
+      setSelectedService(null);
+    }
+  }, [currentServices, selectedService]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
@@ -1297,41 +1404,10 @@ export default function Home() {
     );
   }
 
-  // Get services for selected site
-  const baseFilteredServices = services.filter(service => (
-    (!selectedGovernorate || service.governorate === selectedGovernorate) &&
-    (!selectedArea || service.area === selectedArea)
-  ));
-
-  const currentServices = (selectedSite
-    ? baseFilteredServices.filter(service => service.siteName === selectedSite)
-    : baseFilteredServices)
-    .map(service => ({
-      ...service,
-      translatedName: t[lang].services_provided[service.name] || service.name
-    }));
-
-  const hasActiveFilters = Boolean(selectedGovernorate || selectedArea || selectedSite);
-
-  // Governorate/Area/Site filters
-  const governorates = [...new Set(services.map(s => s.governorate).filter(Boolean))];
-  const areas = selectedGovernorate
-    ? [...new Set(services.filter(s => s.governorate === selectedGovernorate).map(s => s.area).filter(Boolean))]
-    : [];
-
-  const filteredServicesForSiteList = services.filter(s =>
-    (!selectedGovernorate || s.governorate === selectedGovernorate) &&
-    (!selectedArea || s.area === selectedArea)
-  );
-
-  const filteredSites = [...new Set(filteredServicesForSiteList.map(s => s.siteName).filter(Boolean))];
-
   const renderMarkerInfoContent = () => {
     if (!selectedMarkerInfo) return null;
-    const primarySiteName = selectedMarkerInfo.servicesAtLoc[0]?.siteName || '';
-    const displaySiteName = lang === 'ar'
-      ? (t[lang]?.siteNames?.[primarySiteName] || primarySiteName)
-      : primarySiteName;
+    const primaryName = selectedMarkerInfo.servicesAtLoc[0]?.name || '';
+    const displayMarkerName = getTranslatedLabel(t[lang].services_provided, primaryName);
     return (
       <>
         <button
@@ -1341,13 +1417,14 @@ export default function Home() {
           <span aria-label="Close">✕</span>
         </button>
         <div className="p-6 pt-12 space-y-4">
-          <h2 className="text-xl font-bold mb-2">{displaySiteName}</h2>
+          <h2 className="text-xl font-bold mb-2">{displayMarkerName}</h2>
           <p className="text-xs mb-2">{selectedMarkerInfo.lat}, {selectedMarkerInfo.lng}</p>
           {selectedMarkerInfo.servicesAtLoc.map((s, idx) => (
             <div key={idx} className="mb-4 border-b border-gray-200 dark:border-zinc-800 pb-4 last:border-b-0 last:pb-0">
-              <div className="font-semibold text-lg mb-1">{t[lang].services_provided[s.name] || s.name}</div>
-              <div className="text-sm mb-1">{t[lang].governorates[s.governorate] || s.governorate} - {t[lang].areas[s.area] || s.area}</div>
-              <div className="text-xs mb-1">{getServiceType(s.name)}</div>
+              <div className="font-semibold text-lg mb-1">{getTranslatedLabel(t[lang].services_provided, s.name)}</div>
+              {s.service_name && <div className="text-sm mb-1">{s.service_name}</div>}
+              {s.location && <div className="text-sm mb-1">{s.location}</div>}
+              {s.area && <div className="text-sm mb-1">{getTranslatedLabel(t[lang].areas, s.area)}</div>}
             </div>
           ))}
         </div>
@@ -1393,6 +1470,34 @@ export default function Home() {
           }}
         >
           <div ref={mapContainerRef} className="h-full w-full"></div>
+          {showGuidancePane && (
+            <div className="absolute inset-0 z-[1150] flex items-center justify-center bg-black/35 p-4">
+              <div className="w-full max-w-md rounded-2xl bg-white/95 p-5 shadow-2xl ring-1 ring-black/5 backdrop-blur dark:bg-zinc-900/95">
+                <div className="space-y-3 text-center">
+                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t[lang].guidanceTitle}</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{t[lang].guidanceDescription}</p>
+                </div>
+                <div className="mt-4 space-y-3">
+                  <div className="rounded-xl bg-blue-50 px-4 py-3 text-sm text-blue-950 dark:bg-blue-950/40 dark:text-blue-100">
+                    {t[lang].guidancePinch}
+                  </div>
+                  <div className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-950 dark:bg-emerald-950/40 dark:text-emerald-100">
+                    {t[lang].guidanceMarker}
+                  </div>
+                  <div className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:bg-amber-950/40 dark:text-amber-100">
+                    {t[lang].guidanceFilters}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={dismissGuidancePane}
+                  className="mt-5 w-full rounded-full bg-[#1b1464] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#130f4a]"
+                >
+                  {t[lang].guidanceDismiss}
+                </button>
+              </div>
+            </div>
+          )}
           <button
             onClick={toggleBaseLayer}
             className="absolute top-4 right-4 z-[1100] bg-white/90 dark:bg-zinc-900/90 text-gray-900 dark:text-white px-3 py-2 rounded-full shadow-md border border-gray-200 dark:border-zinc-800 text-xs font-semibold"
@@ -1491,15 +1596,14 @@ export default function Home() {
           {/* Governorate Dropdown */}
           <div className="mb-4">
             <Select
-              value={selectedGovernorate ? { value: selectedGovernorate, label: t[lang].governorates[selectedGovernorate] || selectedGovernorate } : null}
+              value={selectedGovernorate ? { value: selectedGovernorate, label: getTranslatedLabel(t[lang].governorates, selectedGovernorate) } : null}
               onChange={option => {
                 const govVal = option ? option.value : null;
                 setSelectedGovernorate(govVal);
                 setSelectedArea(null);
-                setSelectedSite(null);
                 setSelectedService(null);
               }}
-              options={governorates.map(gov => ({ value: gov, label: t[lang].governorates[gov] || gov }))}
+              options={governorates.map(gov => ({ value: gov, label: getTranslatedLabel(t[lang].governorates, gov) }))}
               placeholder={lang === 'ar' ? 'اختر المحافظة' : 'Select Governorate'}
               isClearable
               instanceId="service-mapping-governorate-select"
@@ -1536,14 +1640,13 @@ export default function Home() {
           {/* Area Dropdown */}
           <div className="mb-4">
             <Select
-              value={selectedArea ? { value: selectedArea, label: t[lang].areas[selectedArea] || selectedArea } : null}
+              value={selectedArea ? { value: selectedArea, label: getTranslatedLabel(t[lang].areas, selectedArea) } : null}
               onChange={option => {
                 const areaVal = option ? option.value : null;
                 setSelectedArea(areaVal);
-                setSelectedSite(null);
                 setSelectedService(null);
               }}
-              options={areas.map(area => ({ value: area, label: t[lang].areas[area] || area }))}
+              options={areas.map(area => ({ value: area, label: getTranslatedLabel(t[lang].areas, area) }))}
               placeholder={lang === 'ar' ? 'اختر المنطقة' : 'Select Area'}
               isClearable
               isDisabled={!selectedGovernorate}
@@ -1578,23 +1681,23 @@ export default function Home() {
             />
           </div>
 
-          {/* Sites Dropdown */}
+          {/* Service Type Dropdown */}
           <div className="mb-6">
             <Select
-              value={selectedSite ? { value: selectedSite, label: t[lang].siteNames[selectedSite] || selectedSite } : null}
+              value={selectedServiceType ? { value: selectedServiceType, label: getTranslatedServiceType(t[lang].legend_services, selectedServiceType) } : null}
               onChange={option => {
-                const siteVal = option ? option.value : null;
-                setSelectedSite(siteVal);
+                const serviceTypeVal = option ? option.value : null;
+                setSelectedServiceType(serviceTypeVal);
                 setSelectedService(null);
-                if (siteVal) gaEvent('site_selected', { site: siteVal });
+                if (serviceTypeVal) gaEvent('service_type_selected', { type: serviceTypeVal });
               }}
-              options={filteredSites.map(site => ({
-                value: site,
-                label: `${t[lang].siteNames[site] || site} (${filteredServicesForSiteList.filter(s => s.siteName === site).length} ${t[lang].services})`
+              options={serviceTypes.map(serviceType => ({
+                value: serviceType,
+                label: getTranslatedServiceType(t[lang].legend_services, serviceType)
               }))}
-              placeholder={t[lang].sites}
+              placeholder={t[lang].selectServiceType}
               isClearable
-              instanceId="service-mapping-site-select"
+              instanceId="service-mapping-service-type-select"
               styles={{
                 control: (base, state) => ({
                   ...base,
@@ -1621,7 +1724,7 @@ export default function Home() {
                 indicatorsContainer: (base) => ({ ...base, color: '#1b1464' }),
                 dropdownIndicator: (base) => ({ ...base, color: '#1b1464' }),
               }}
-              aria-label="Sites Dropdown"
+              aria-label="Service Type Dropdown"
             />
           </div>
 
@@ -1656,14 +1759,21 @@ export default function Home() {
                         }`}
                     >
                       <p className="font-semibold text-sm">{service.translatedName}</p>
-                      <p className={`text-xs ${selectedService?.id === service.id ? 'text-white/90' : 'text-gray-600 dark:text-gray-300'}`}>
-                        {t[lang].siteNames[service.siteName] || service.siteName}
-                      </p>
+                      {service.service_name && (
+                        <p className={`text-xs mt-1 ${selectedService?.id === service.id ? 'text-white/90' : 'text-gray-600 dark:text-gray-300'}`}>
+                          {service.service_name}
+                        </p>
+                      )}
+                      {service.location && (
+                        <p className={`text-xs mt-1 ${selectedService?.id === service.id ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}>
+                          {service.location}
+                        </p>
+                      )}
                       <p className="text-xs opacity-75 mb-1">
                         {service.coordinates.latitude}, {service.coordinates.longitude}
                       </p>
                       <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${selectedService?.id === service.id ? 'bg-white/20' : badgeColor}`}>
-                        {serviceType}
+                        {getTranslatedServiceType(t[lang].legend_services, serviceType)}
                       </span>
                     </button>
                   );
@@ -1676,7 +1786,13 @@ export default function Home() {
           {selectedService && (
             <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
               <p className="text-sm font-semibold text-green-900 dark:text-green-200">{t[lang].selected}</p>
-              <p className="text-sm text-green-700 dark:text-green-300 mt-1">{selectedService.name}</p>
+              <p className="text-sm text-green-700 dark:text-green-300 mt-1">{getTranslatedLabel(t[lang].services_provided, selectedService.name)}</p>
+              {selectedService.service_name && (
+                <p className="text-sm text-green-700 dark:text-green-300 mt-1">{selectedService.service_name}</p>
+              )}
+              {selectedService.location && (
+                <p className="text-xs text-green-700 dark:text-green-300 mt-1">{selectedService.location}</p>
+              )}
             </div>
           )}
           </div>
