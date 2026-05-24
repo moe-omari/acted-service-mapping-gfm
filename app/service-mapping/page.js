@@ -1689,7 +1689,16 @@ export default function Home() {
                 const serviceTypeVal = option ? option.value : null;
                 setSelectedServiceType(serviceTypeVal);
                 setSelectedService(null);
-                if (serviceTypeVal) gaEvent('service_type_selected', { type: serviceTypeVal });
+                if (serviceTypeVal) {
+                  gaEvent('service_type_selected', {
+                    service_type: serviceTypeVal,
+                    source: 'dropdown_filter',
+                  });
+                } else {
+                  gaEvent('service_type_cleared', {
+                    source: 'dropdown_filter',
+                  });
+                }
               }}
               options={serviceTypes.map(serviceType => ({
                 value: serviceType,

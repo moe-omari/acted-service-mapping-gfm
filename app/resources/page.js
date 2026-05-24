@@ -44,6 +44,11 @@ const getStoredLanguage = () => {
   return window.localStorage.getItem('selectedLang') || 'ar';
 };
 
+const gaEvent = (action, params = {}) => {
+  if (typeof window === 'undefined' || !window.gtag) return;
+  window.gtag('event', action, params);
+};
+
 const translations = {
   en: {
     hubLabel: 'ACTED Resource Hub',
@@ -216,7 +221,7 @@ const translations = {
 };
 
 export default function ResourcesLandingPage() {
-  const [lang, setLang] = useState('ar');
+  const [lang, setLang] = useState(getStoredLanguage);
   const [isMobile, setIsMobile] = useState(false);
   const t = translations[lang];
   const toggleLanguage = () => {
@@ -229,8 +234,9 @@ export default function ResourcesLandingPage() {
   }, [lang]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    setLang(getStoredLanguage());
+    gaEvent('resources_hub_view', {
+      page: 'resources_hub',
+    });
   }, []);
 
   useEffect(() => {
@@ -285,6 +291,14 @@ export default function ResourcesLandingPage() {
                   <Link
                     key={entryKey}
                     href={href}
+                    onClick={() => {
+                      gaEvent('resource_card_click', {
+                        resource_key: entryKey,
+                        resource_title: t.resources[entryKey].title,
+                        section: titleKey,
+                        destination: href,
+                      });
+                    }}
                     className="group rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
                   >
                     <div className="flex items-center justify-between">
