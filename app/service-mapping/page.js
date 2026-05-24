@@ -1163,7 +1163,7 @@ export default function Home() {
 
         servicesAtLoc.forEach(s => {
           gaEvent('marker_click', {
-            service_id: s.id,
+            service_type: getServiceType(s.name),
             service_name: s.name,
             site: s.displaySiteName || s.siteName,
             type: getServiceType(s.name),
