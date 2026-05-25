@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Select from 'react-select';
 import 'leaflet/dist/leaflet.css';
@@ -1429,7 +1430,8 @@ export default function Home() {
     );
   };
 
-  const logoSrc = isMobile ? '/ACTED_LOGO_white.png' : '/acted-logo.png';
+  const logoSrc = '/ACTED_LOGO_white.png';
+  const backLabel = lang === 'ar' ? 'العودة للرئيسية' : 'Back Home';
   const switchLabel = lang === 'ar' ? t[lang].switchToEnglish : t[lang].switchToArabic;
   const switchLabelClass = lang === 'ar' ? '' : notoArabic.className;
 
@@ -1439,18 +1441,28 @@ export default function Home() {
       dir={lang === 'ar' ? 'rtl' : 'ltr'}
       style={{ fontFamily: lang === 'ar' ? undefined : 'Branding, sans-serif' }}
     >
-      <header className="shadow-md border-b border-gray-200 dark:border-zinc-800 px-1 sm:px-6 py-1 sm:py-2" style={{ backgroundColor: '#1b1464' }}>
-        <div className="flex items-center justify-center gap-1 sm:gap-3 w-full">
-          <img src={logoSrc} alt="ACTED Logo" className="h-10 sm:h-16 w-auto" />
-          <h1 className="text-base sm:text-2xl font-bold text-center w-full whitespace-nowrap" style={{ color: '#fff' }}>{t[lang].appTitle}</h1>
+      <header className="shadow-md border-b border-gray-200 dark:border-zinc-800 px-1 sm:px-6 py-0.5 sm:py-2" style={{ backgroundColor: '#1b1464' }}>
+        <div className="flex items-center gap-1 sm:gap-3 w-full">
+          <img src={logoSrc} alt="ACTED Logo" className="h-8 sm:h-16 w-auto" />
+          <Link
+            href="/"
+            style={{ minWidth: isMobile ? 72 : 140 }}
+            className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 text-white font-semibold text-[10px] sm:text-sm px-2 py-1.5 sm:px-3 sm:py-2 shadow transition hover:bg-white/20"
+            aria-label={backLabel}
+          >
+            {backLabel}
+          </Link>
+          <div className="flex min-w-0 flex-1 items-center justify-center gap-1 sm:gap-3">
+            <h1 className="min-w-0 flex-1 text-sm sm:text-2xl font-bold text-center whitespace-nowrap overflow-hidden text-ellipsis" style={{ color: '#fff' }}>{t[lang].appTitle}</h1>
+          </div>
           <button
             type="button"
             onClick={toggleLanguage}
-            style={{ minWidth: isMobile ? 90 : 140 }}
-            className="sm:min-w-[160px] inline-flex items-center justify-center gap-2 rounded-full bg-white text-[#1b1464] font-semibold text-xs sm:text-sm px-3 py-2 shadow hover:bg-blue-50 transition"
+            style={{ minWidth: isMobile ? 72 : 140 }}
+            className="sm:min-w-[160px] inline-flex items-center justify-center gap-1 sm:gap-2 rounded-full bg-white text-[#1b1464] font-semibold text-[10px] sm:text-sm px-2 py-1.5 sm:px-3 sm:py-2 shadow hover:bg-blue-50 transition"
             aria-label={lang === 'ar' ? 'التبديل إلى الإنجليزية' : 'Switch to Arabic'}
           >
-            <img src="/translate.png" alt="" aria-hidden="true" className="h-4 w-4" />
+            <img src="/translate.png" alt="" aria-hidden="true" className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className={switchLabelClass}>{switchLabel}</span>
           </button>
         </div>
