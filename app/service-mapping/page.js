@@ -246,6 +246,13 @@ const gaEvent = (action, params = {}) => {
   window.gtag('event', action, params);
 };
 
+const getServiceAnalyticsParams = (service = {}) => ({
+  service_id: service.id,
+  service_name: service.name,
+  site: service.displaySiteName || service.siteName,
+  service_type: getServiceType(service.name),
+});
+
 const getStoredLanguage = () => {
   if (typeof window === 'undefined') return 'ar';
   return window.localStorage.getItem('selectedLang') || 'ar';
@@ -1162,12 +1169,7 @@ export default function Home() {
         });
 
         servicesAtLoc.forEach(s => {
-          gaEvent('marker_click', {
-            service_type: getServiceType(s.name),
-            service_name: s.name,
-            site: s.displaySiteName || s.siteName,
-            type: getServiceType(s.name),
-          });
+          gaEvent('marker_click', getServiceAnalyticsParams(s));
         });
       });
     }
@@ -1326,12 +1328,7 @@ export default function Home() {
     setActiveMarkerKey(destinationKey);
 
     setSelectedService(service);
-    gaEvent('service_selected', {
-      service_id: service.id,
-      service_name: service.name,
-      site: service.displaySiteName || service.siteName,
-      type: getServiceType(service.name),
-    });
+    gaEvent('service_selected', getServiceAnalyticsParams(service));
 
     const destinationLatLng = L.latLng(service.coordinates.latitude, service.coordinates.longitude);
     mapRef.current.flyTo(destinationLatLng, Math.max(mapRef.current.getZoom(), SERVICE_FOCUS_ZOOM));
