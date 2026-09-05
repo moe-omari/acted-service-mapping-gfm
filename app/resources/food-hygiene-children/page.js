@@ -1,7 +1,7 @@
 import ResourceDetail from '../ResourceDetail';
 
 const resource = {
-  file: encodeURI('/نظافة الغذاء - للأطفال.pdf'),
+  file: '/food-hygiene-children.pdf',
   type: 'pdf',
   downloadName: 'Food Hygiene for Children.pdf',
   translations: {

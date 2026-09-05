@@ -1,7 +1,7 @@
 import ResourceDetail from '../ResourceDetail';
 
 const resource = {
-  file: encodeURI('/العناية بالجسم للأطفال.pdf'),
+  file: '/body-care-children.pdf',
   type: 'pdf',
   downloadName: 'Body Care for Children.pdf',
   translations: {

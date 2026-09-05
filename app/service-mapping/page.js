@@ -60,6 +60,7 @@ const getColorFromService = (serviceName) => {
   else if (lowerName.includes('nutrition center')) color = '#fbbf24';
   else if (lowerName.includes('distribution point')) color = '#545454';
   else if (lowerName.includes('social activity')) color = '#93c01f';
+  else if (lowerName.includes('safe space') || lowerName.includes('مساحة آمنة') || lowerName.includes('مساحات آمنة')) color = '#14b8a6';
   else color = '#808080'; // default gray
   return color;
 };
@@ -183,6 +184,11 @@ const getServiceType = (serviceName = '') => {
   if (normalizedName.includes('nutrition center')) return 'Nutrition Center';
   if (normalizedName.includes('distribution point')) return 'Distribution Point';
   if (normalizedName.includes('social activity')) return 'Social Activity';
+  if (
+    normalizedName.includes('safe space') ||
+    normalizedName.includes('مساحة آمنة') ||
+    normalizedName.includes('مساحات آمنة')
+  ) return 'Safe Space';
   return 'Other';
 };
 
@@ -574,6 +580,12 @@ const rawServiceTranslations = [
     ar: 'مركز تغذية - برنامج الأغذية العالمي / اليونيسف',
   },
   {
+    key: 'Safe space',
+    en: 'Safe Space',
+    ar: 'مساحة آمنة',
+    aliases: ['Safe Space', 'Safe space'],
+  },
+  {
     key: 'Social Activity',
     en: 'Social Activity',
     ar: 'نشاط اجتماعي',
@@ -856,6 +868,7 @@ export default function Home() {
         "Nutrition Center": "Nutrition Center",
         "Distribution Point": "Distribution Point",
         "Social Activity": "Social Activity",
+        "Safe Space": "Safe Space",
         "Other": "Other"
       },
       governorates: {
@@ -939,6 +952,14 @@ export default function Home() {
         "Al-Mostafa": "المصطفى",
         "ALMuktar faisal": "المختار فيصل",
         "Alnahda site": "موقع النهضة",
+        "AL Nahda Site": "موقع النهضة",
+        "AL Najjar Site": "موقع النجار",
+        "AL Awda Site": "موقع العودة",
+        "AL Ihsan": "الإحسان",
+        "AL Kareem": "الكريم",
+        "Al Amal Site": "موقع الأمل",
+        "Al Huria site": "موقع الحرية",
+        "Al Karama Site": "موقع الكرامة",
         "Al-Nakheel and Al-Zytoon Site": "موقع النخيل والزيتون",
         "Al-Nour": "النور",
         "Al-Quds": "القدس",
@@ -985,6 +1006,7 @@ export default function Home() {
         "Nutrition Center": "مركز تغذية",
         "Distribution Point": "نقطة توزيع",
         "Social Activity": "نشاط اجتماعي",
+        "Safe Space": "مساحة آمنة",
         "Other": "أخرى"
       },
       governorates: {
@@ -1560,6 +1582,10 @@ export default function Home() {
                 <div className="w-2 lg:w-3 h-2 lg:h-3 rounded-full flex-shrink-0" style={{ backgroundColor: '#93c01f' }}></div>
                 <span className="text-gray-700 dark:text-gray-300 truncate text-xs">{t[lang].legend_services["Social Activity"]}</span>
               </div>
+              <div className="flex items-center gap-1 lg:gap-2">
+                <div className="w-2 lg:w-3 h-2 lg:h-3 rounded-full flex-shrink-0" style={{ backgroundColor: '#14b8a6' }}></div>
+                <span className="text-gray-700 dark:text-gray-300 truncate text-xs">{t[lang].legend_services["Safe Space"]}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1766,6 +1792,7 @@ export default function Home() {
                   if (serviceType === 'Community Space') badgeColor = 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
                   if (serviceType === 'Nutrition Center') badgeColor = 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200';
                   if (serviceType === 'Social Activity') badgeColor = 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200';
+                  if (serviceType === 'Safe Space') badgeColor = 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200';
 
                     return (
                     <button

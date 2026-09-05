@@ -2140,5 +2140,566 @@
       "latitude": 31.353291,
       "longitude": 34.26066
     }
+  },
+  {
+    "id": 1146,
+    "name": "Safe space",
+    "governorate": "Khanyounis",
+    "area": "Othman 1",
+    "siteName": "AL Nahda Site",
+    "location": "موقع النهضة - بجوار منزل السيد علي عرفة",
+    "service_name": "",
+    "coordinates": {
+      "latitude": 31.354642,
+      "longitude": 34.263307
+    }
+  },
+  {
+    "id": 1147,
+    "name": "Safe space",
+    "governorate": "Khanyounis",
+    "area": "Mohi Al-Deen Al-Najjar",
+    "siteName": "AL Najjar Site",
+    "location": "موقع النجار - بجوار منزل السيد عبد الرحمن طبل",
+    "service_name": "",
+    "coordinates": {
+      "latitude": 31.35674,
+      "longitude": 34.25924
+    }
+  },
+  {
+    "id": 1148,
+    "name": "Safe space",
+    "governorate": "Khanyounis",
+    "area": "Al-Amal and Al-Karama",
+    "siteName": "Ayash site",
+    "location": "موقع عياش - بجوار منزل السيد لؤي حسن (ابو احمد الجبالي)",
+    "service_name": "",
+    "coordinates": {
+      "latitude": 31.35298,
+      "longitude": 34.26755
+    }
+  },
+  {
+    "id": 1149,
+    "name": "Safe space",
+    "governorate": "Khanyounis",
+    "area": "Abu Kefah",
+    "siteName": "AL Awda Site",
+    "location": "موقع العودة - مقابل مسجد النور",
+    "service_name": "",
+    "coordinates": {
+      "latitude": 31.351238,
+      "longitude": 34.256709
+    }
+  },
+  {
+    "id": 1150,
+    "name": "Safe space",
+    "governorate": "Khanyounis",
+    "area": "Al-Ihsan",
+    "siteName": "AL Ihsan",
+    "location": "موقع الاحسان - مقابل خيمة السيد امين صقر",
+    "service_name": "",
+    "coordinates": {
+      "latitude": 31.357242,
+      "longitude": 34.262095
+    }
+  },
+  {
+    "id": 1151,
+    "name": "Safe space",
+    "governorate": "Khanyounis",
+    "area": "Othman 2",
+    "siteName": "AL Kareem",
+    "location": "موقع الكريم - بجوار خيمة السيد شاكر اصليح",
+    "service_name": "",
+    "coordinates": {
+      "latitude": 31.35268,
+      "longitude": 34.262861
+    }
+  },
+  {
+    "id": 1152,
+    "name": "Social activity",
+    "governorate": "Khanyounis",
+    "area": "Al-Amal and Al-Karama",
+    "siteName": "Al Amal Site",
+    "location": "موقع الامل - بجوار منزل السيد موسى الشاعر",
+    "service_name": "",
+    "coordinates": {
+      "latitude": 31.354642,
+      "longitude": 34.263307
+    }
+  },
+  {
+    "id": 1153,
+    "name": "Social activity",
+    "governorate": "Khanyounis",
+    "area": "Othman 1",
+    "siteName": "Al Huria site",
+    "location": "موقع الحرية - بجوار منزل السيد ايمن زعرب",
+    "service_name": "",
+    "coordinates": {
+      "latitude": 31.35674,
+      "longitude": 34.25924
+    }
+  },
+  {
+    "id": 1154,
+    "name": "Social activity",
+    "governorate": "Khanyounis",
+    "area": "Abu Kefah",
+    "siteName": "Al Karama Site",
+    "location": "موقع الكرامة - ارض ابوكفاح زعرب",
+    "service_name": "",
+    "coordinates": {
+      "latitude": 31.351822,
+      "longitude": 34.255811
+    }
+  },
+  {
+    "id": 212,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.339278,
+      "longitude": 34.246417
+    },
+    "Org": "Women's Affairs Center"
+  },
+  {
+    "id": 211,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.358361,
+      "longitude": 34.291583
+    },
+    "Org": "Women's Affairs Center"
+  },
+  {
+    "id": 210,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.394194,
+      "longitude": 34.30125
+    },
+    "Org": "Women's Affairs Center"
+  },
+  {
+    "id": 209,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.502417,
+      "longitude": 34.462528
+    },
+    "Org": "QADER for Community Development"
+  },
+  {
+    "id": 208,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.517056,
+      "longitude": 34.436833
+    },
+    "Org": "Women's Affairs Center"
+  },
+  {
+    "id": 207,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.513833,
+      "longitude": 34.450722
+    },
+    "Org": "Women's Affairs Center"
+  },
+  {
+    "id": 206,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.528444,
+      "longitude": 34.454167
+    },
+    "Org": "Women's Affairs Technical Committee"
+  },
+  {
+    "id": 205,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.534472,
+      "longitude": 34.453028
+    },
+    "Org": "Abdel Shafi Community Health Association"
+  },
+  {
+    "id": 204,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.537056,
+      "longitude": 34.489
+    },
+    "Org": "Women's Affairs Center"
+  },
+  {
+    "id": 203,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.550889,
+      "longitude": 34.481028
+    },
+    "Org": "QADER for Community Development"
+  },
+  {
+    "id": 202,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.341167,
+      "longitude": 34.250861
+    },
+    "Org": "WEFAQ"
+  },
+  {
+    "id": 201,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.3479462,
+      "longitude": 34.2520381
+    },
+    "Org": "QADER for Community Development"
+  },
+  {
+    "id": 200,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.3519444,
+      "longitude": 34.2538889
+    },
+    "Org": "The Culture &Free thougth Assocation"
+  },
+  {
+    "id": 199,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.3405,
+      "longitude": 34.3067
+    },
+    "Org": "Women's Affairs Center"
+  },
+  {
+    "id": 198,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.339969,
+      "longitude": 34.282145
+    },
+    "Org": "Palestine Association for Development and Justice"
+  },
+  {
+    "id": 197,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.348073,
+      "longitude": 34.270561
+    },
+    "Org": "Society of women graduates"
+  },
+  {
+    "id": 196,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.35291,
+      "longitude": 34.26472
+    },
+    "Org": "AISHA Association for Woman and Child Protection"
+  },
+  {
+    "id": 195,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.35527,
+      "longitude": 34.25802
+    },
+    "Org": "International Medical Corps"
+  },
+  {
+    "id": 194,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.354487,
+      "longitude": 34.277995
+    },
+    "Org": "Care International"
+  },
+  {
+    "id": 193,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.363328,
+      "longitude": 34.285727
+    },
+    "Org": "Palestine Association for Development and Justice"
+  },
+  {
+    "id": 192,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.364808,
+      "longitude": 34.275324
+    },
+    "Org": "Center for Women's Legal Research Counseling and Protection"
+  },
+  {
+    "id": 191,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.366924,
+      "longitude": 34.273689
+    },
+    "Org": "Project hope -Al Aqqad Clinic"
+  },
+  {
+    "id": 190,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.376611,
+      "longitude": 34.309389
+    },
+    "Org": "Abdel Shafi Community Health Association"
+  },
+  {
+    "id": 189,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.384344,
+      "longitude": 34.299798
+    },
+    "Org": "Abdel Shafi Community Health Association"
+  },
+  {
+    "id": 188,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "South",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.384056,
+      "longitude": 34.295611
+    },
+    "Org": "Abdel Shafi Community Health Association"
+  },
+  {
+    "id": 187,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.509251982538544,
+      "longitude": 34.44130997995721
+    },
+    "Org": "Al-Ataa Charitable Society"
+  },
+  {
+    "id": 186,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.512611,
+      "longitude": 34.439722
+    },
+    "Org": "International Medical Corps"
+  },
+  {
+    "id": 185,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.515028,
+      "longitude": 34.457833
+    },
+    "Org": "AISHA Association for Woman and Child Protection"
+  },
+  {
+    "id": 184,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.515444,
+      "longitude": 34.441639
+    },
+    "Org": "AISHA Association for Woman and Child Protection"
+  },
+  {
+    "id": 183,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.524117,
+      "longitude": 34.431794
+    },
+    "Org": "AISHA Association for Woman and Child Protection"
+  },
+  {
+    "id": 182,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.5226,
+      "longitude": 134.4433
+    },
+    "Org": "Women's Affairs Center"
+  },
+  {
+    "id": 181,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.520778,
+      "longitude": 34.452528
+    },
+    "Org": "AISHA Association for Woman and Child Protection"
+  },
+  {
+    "id": 180,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.52633,
+      "longitude": 34.44563
+    },
+    "Org": "Project hope - Eidiya Clin"
+  },
+  {
+    "id": 179,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.52465,
+      "longitude": 34.460354
+    },
+    "Org": "AISHA Association for Woman and Child Protection"
+  },
+  {
+    "id": 178,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.538694,
+      "longitude": 34.454083
+    },
+    "Org": "AISHA Association for Woman and Child Protection"
+  },
+  {
+    "id": 177,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.536112943057482,
+      "longitude": 34.46541648235125
+    },
+    "Org": "Al-Najd Developmental Forum"
+  },
+  {
+    "id": 176,
+    "name": "مساحات آمنة للنساء والفتيات",
+    "location": "North",
+    "site name": "",
+    "siteName": "",
+    "coordinates": {
+      "latitude": 31.54044,
+      "longitude": 34.461642
+    },
+    "Org": ""
   }
 ]

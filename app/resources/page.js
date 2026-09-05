@@ -19,12 +19,17 @@ const resourceSections = [
     titleKey: 'iecMaterials',
     entries: [
       { key: 'poster', href: '/resources/poster-cleaning' },
+      { key: 'waterTankCleaning', href: '/resources/cleaning-water-tank' },
       { key: 'latrine', href: '/resources/latrine-pits-flyer' },
       { key: 'dbm', href: '/resources/dead-body-management' },
       { key: 'handwashing', href: '/resources/handwashing-flyer' },
       { key: 'psea', href: '/resources/psea-no-excuse' },
       { key: 'floodPrevention', href: '/resources/flood-prevention' },
       { key: 'vectorControl', href: '/resources/vector-control' },
+      { key: 'vectorControlChildren', href: '/resources/vector-control-children' },
+      { key: 'vectorControlAdults', href: '/resources/vector-control-adults' },
+      { key: 'solidWaste', href: '/resources/solid-waste-disposal' },
+      { key: 'warRemnantsKids', href: '/resources/war-remnants-children' },
       { key: 'rodentControl', href: '/resources/rodent-control' },
       { key: 'foodHygieneKids', href: '/resources/food-hygiene-children' },
       { key: 'bodyCareKids', href: '/resources/body-care-children' },
@@ -68,6 +73,10 @@ const translations = {
         title: 'Poster: Cleaning of Jerry Cans',
         description: 'Awareness poster outlining proper cleaning steps for jerry cans.',
       },
+      waterTankCleaning: {
+        title: 'Cleaning the Water Tank',
+        description: 'Steps for cleaning a water tank so stored water stays safer to use.',
+      },
       latrine: {
         title: 'Flyer: Closing Latrine Pits',
         description: 'Guidance flyer on safely closing filled latrine pits.',
@@ -91,6 +100,22 @@ const translations = {
       vectorControl: {
         title: 'Vector Control Guide',
         description: 'Key actions to reduce disease-carrying insects around shelters.',
+      },
+      vectorControlChildren: {
+        title: 'Poster: Disease-carrying Insects for Children',
+        description: 'Child-friendly poster on insects that spread disease and how to stay protected.',
+      },
+      vectorControlAdults: {
+        title: 'Poster: Disease-carrying Insects for Adults',
+        description: 'Awareness poster for adults on disease-carrying insects and prevention around shelters.',
+      },
+      solidWaste: {
+        title: 'Brochure: Solid Waste Disposal',
+        description: 'Guidance on collecting and disposing of solid waste safely around shelters.',
+      },
+      warRemnantsKids: {
+        title: 'Poster: War Remnants for Children',
+        description: 'Child-friendly poster on recognizing war remnants and staying away from them.',
       },
       rodentControl: {
         title: 'Rodent Control Poster',
@@ -152,6 +177,10 @@ const translations = {
         title: 'ملصق تنظيف الجِرار',
         description: 'ملصق توعوي يوضح خطوات تنظيف جرار المياه بشكل آمن.',
       },
+      waterTankCleaning: {
+        title: 'تنظيف خزان المياه',
+        description: 'خطوات تنظيف خزان المياه للحفاظ على سلامة المياه المخزنة.',
+      },
       latrine: {
         title: 'نشرة إغلاق حفر المراحيض',
         description: 'إرشادات حول إغلاق حفر المراحيض الممتلئة بطريقة آمنة.',
@@ -175,6 +204,22 @@ const translations = {
       vectorControl: {
         title: 'دليل مكافحة النواقل',
         description: 'إرشادات للحد من الحشرات الناقلة للأمراض داخل وحول المخيم.',
+      },
+      vectorControlChildren: {
+        title: 'بوستر الحشرات الناقلة للأمراض للأطفال',
+        description: 'ملصق مبسط للأطفال حول الحشرات الناقلة للأمراض وطرق الوقاية منها.',
+      },
+      vectorControlAdults: {
+        title: 'بوستر الحشرات الناقلة للأمراض للراشدين',
+        description: 'ملصق توعوي للراشدين حول الحشرات الناقلة للأمراض وسبل الوقاية حول المواقع والمآوي.',
+      },
+      solidWaste: {
+        title: 'بروشور التخلص من النفايات الصلبة',
+        description: 'إرشادات لجمع النفايات الصلبة والتخلص منها بطريقة آمنة حول المواقع والمآوي.',
+      },
+      warRemnantsKids: {
+        title: 'بوستر مخلفات الحرب للأطفال',
+        description: 'ملصق مبسط للأطفال حول التعرف على مخلفات الحرب والابتعاد عنها.',
       },
       rodentControl: {
         title: 'ملصق مكافحة القوارض',
@@ -221,12 +266,19 @@ const translations = {
 };
 
 export default function ResourcesLandingPage() {
-  const [lang, setLang] = useState(getStoredLanguage);
+  const [lang, setLang] = useState('ar');
   const [isMobile, setIsMobile] = useState(false);
   const t = translations[lang];
   const toggleLanguage = () => {
     setLang((prev) => (prev === 'en' ? 'ar' : 'en'));
   };
+
+  useEffect(() => {
+    const stored = getStoredLanguage();
+    if (stored === 'en' || stored === 'ar') {
+      setLang(stored);
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
