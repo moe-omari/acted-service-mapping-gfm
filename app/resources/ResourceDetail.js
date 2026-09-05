@@ -17,12 +17,26 @@ const interfaceText = {
     viewerLabel: 'Resource Viewer',
     backLabel: '← Back to resources',
     downloadLabel: 'Download',
+    downloadPageLabel: (page) => `Download ${page}`,
   },
   ar: {
     viewerLabel: 'عارض الموارد',
     backLabel: 'العودة إلى الموارد →',
     downloadLabel: 'تحميل',
+    downloadPageLabel: (page) => `تحميل ${page}`,
   },
+};
+
+const getResourceFiles = (resource = {}) => {
+  if (Array.isArray(resource.files) && resource.files.length) {
+    return resource.files.map((file) => (
+      typeof file === 'string' ? { src: file, downloadName: file.split('/').pop() } : file
+    ));
+  }
+  if (resource.file) {
+    return [{ src: resource.file, downloadName: resource.downloadName }];
+  }
+  return [];
 };
 
 export default function ResourceDetail({ resource }) {
@@ -30,6 +44,7 @@ export default function ResourceDetail({ resource }) {
   const isArabic = lang === 'ar';
   const copy = resource.translations[lang] ?? resource.translations.en;
   const ui = interfaceText[lang];
+  const files = getResourceFiles(resource);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -67,31 +82,43 @@ export default function ResourceDetail({ resource }) {
             >
               {ui.backLabel}
             </Link>
-            <a
-              href={resource.file}
-              download={resource.downloadName}
-              className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-            >
-              {ui.downloadLabel}
-            </a>
+            {files.map((file, index) => (
+              <a
+                key={file.src}
+                href={file.src}
+                download={file.downloadName}
+                className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+              >
+                {files.length > 1 ? ui.downloadPageLabel(index + 1) : ui.downloadLabel}
+              </a>
+            ))}
           </div>
         </div>
 
-        <div className="rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-lg overflow-hidden">
-          {resource.type === 'pdf' ? (
+        {resource.type === 'pdf' ? (
+          <div className="rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-lg overflow-hidden">
             <iframe
-              src={`${resource.file}#toolbar=1&navpanes=0`}
+              src={`${files[0]?.src}#toolbar=1&navpanes=0`}
               title={copy.title}
               className="w-full min-h-[80vh]"
             />
-          ) : (
-            <img
-              src={resource.file}
-              alt={copy.title}
-              className="w-full h-auto"
-            />
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {files.map((file, index) => (
+              <div
+                key={file.src}
+                className="rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-lg overflow-hidden"
+              >
+                <img
+                  src={file.src}
+                  alt={files.length > 1 ? `${copy.title} ${index + 1}` : copy.title}
+                  className="w-full h-auto"
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -39,6 +39,7 @@ const resourceSections = [
       { key: 'washCommunityEngagement', href: '/resources/wash-community-engagement' },
       { key: 'hpFlipChart', href: '/resources/hp-flip-chart' },
       { key: 'winterizationFlyer', href: '/resources/winterization-flyer' },
+      { key: 'heatStress', href: '/resources/heat-stress' },
       { key: 'infectionPreventionBasics', href: '/resources/infection-prevention-basics' },
     ],
   },
@@ -153,6 +154,10 @@ const translations = {
         title: 'Winterization Flyer',
         description: 'Protective measures for cold, windy, and wet conditions.',
       },
+      heatStress: {
+        title: 'Heat Stress and Heat Stroke',
+        description: 'Three posters covering symptoms, first aid, and prevention for heat exhaustion and heat stroke.',
+      },
       infectionPreventionBasics: {
         title: 'Infection Prevention Basics',
         description: 'Core precautions to limit the spread of infection.',
@@ -256,6 +261,10 @@ const translations = {
       winterizationFlyer: {
         title: 'نشرة الاستعداد للشتاء',
         description: 'توصيات للحماية من الأمطار والبرد خلال موسم الشتاء.',
+      },
+      heatStress: {
+        title: 'الإجهاد الحراري وضربات الشمس',
+        description: 'ثلاثة ملصقات تغطي الأعراض والإسعاف والوقاية من الإجهاد الحراري وضربة الشمس.',
       },
       infectionPreventionBasics: {
         title: 'أساسيات الوقاية من العدوى',
